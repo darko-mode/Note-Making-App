@@ -12,7 +12,7 @@ A clean and aesthetic note-taking web app built using **HTML**, **CSS**, and **J
 
 ## 📸 Preview
 
-![App Screenshot](./notesmakingweb.png) <!-- You can upload an image and update the path -->
+![App Screenshot](./notemakingweb.png) <!-- You can upload an image and update the path -->
 
 ## 💻 Technologies Used
 
