@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NoteTaker - Modern Notes App</title>
+    <link rel="stylesheet" href="index.css">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.1.9/p5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.topology.min.js"></script>
+</head>
+<body>
+    <div id="animation-bg"></div>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <i class="fas fa-sticky-note"></i>
+                <h1>NoteTaker</h1>
+            </div>
+            <div class="sidebar-actions">
+                <button id="new-note-btn" class="primary-btn">
+                    <i class="fas fa-plus"></i> New Note
+                </button>
+                <div class="tags-container">
+                    <h3>Tags</h3>
+                    <div class="tag-list">
+                        <span class="tag" data-tag="work">Work</span>
+                        <span class="tag" data-tag="personal">Personal</span>
+                        <span class="tag" data-tag="ideas">Ideas</span>
+                        <span class="tag" data-tag="important">Important</span>
+                        <span class="tag add-tag"><i class="fas fa-plus"></i></span>
+                    </div>
+                </div>
+            </div>
+            <div class="sidebar-footer">
+                
+                <span class="version">v1.0</span>
+            </div>
+        </aside>
+
+        <!-- Main content -->
+        <main class="main-content">
+            <div class="top-bar">
+                <div class="search-container">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="search-input" placeholder="Search notes...">
+                </div>
+                <div class="view-options">
+                    <button id="grid-view-btn" class="icon-btn active">
+                        <i class="fas fa-th-large"></i>
+                    </button>
+                    <button id="list-view-btn" class="icon-btn">
+                        <i class="fas fa-list"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Notes container -->
+            <div class="notes-container grid-view">
+                <!-- Pinned notes section -->
+                <div class="notes-section" id="pinned-notes">
+                    <h2 class="section-title"><i class="fas fa-thumbtack"></i> Pinned Notes</h2>
+                    <div class="notes-grid" id="pinned-notes-grid">
+                        <!-- Pinned notes will be inserted here by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Other notes section -->
+                <div class="notes-section" id="other-notes">
+                    <h2 class="section-title"><i class="fas fa-sticky-note"></i> Notes</h2>
+                    <div class="notes-grid" id="notes-grid">
+                        <!-- Notes will be inserted here by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Note Modal -->
+    <div class="modal" id="note-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-title">Add New Note</h2>
+                <button class="close-btn"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="note-title">Title</label>
+                    <input type="text" id="note-title" placeholder="Note title">
+                </div>
+                <div class="form-group">
+                    <label for="note-content">Content</label>
+                    <textarea id="note-content" placeholder="Write your note here..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Tags</label>
+                    <div class="tag-selector">
+                        <span class="tag selectable" data-tag="work">Work</span>
+                        <span class="tag selectable" data-tag="personal">Personal</span>
+                        <span class="tag selectable" data-tag="ideas">Ideas</span>
+                        <span class="tag selectable" data-tag="important">Important</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="checkbox-container">
+                        <input type="checkbox" id="pin-note">
+                        <label for="pin-note">Pin this note</label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="delete-note-btn" class="delete-btn"><i class="fas fa-trash"></i> Delete</button>
+                <button id="save-note-btn" class="primary-btn">Save Note</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div class="modal" id="confirm-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Confirm Delete</h2>
+                <button class="close-btn"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this note? This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button id="cancel-delete-btn" class="secondary-btn">Cancel</button>
+                <button id="confirm-delete-btn" class="delete-btn">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tag Modal -->
+    <div class="modal" id="tag-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add New Tag</h2>
+                <button class="close-btn"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="tag-name">Tag Name</label>
+                    <input type="text" id="tag-name" placeholder="Enter tag name">
+                </div>
+                <div class="form-group">
+                    <label for="tag-color">Tag Color</label>
+                    <div class="color-options">
+                        <span class="color-option" data-color="#4caf50"></span>
+                        <span class="color-option" data-color="#2196f3"></span>
+                        <span class="color-option" data-color="#f44336"></span>
+                        <span class="color-option" data-color="#ff9800"></span>
+                        <span class="color-option" data-color="#9c27b0"></span>
+                        <span class="color-option" data-color="#795548"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="add-tag-btn" class="primary-btn">Add Tag</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast">
+        <span id="toast-message"></span>
+    </div>
+
+    <script src="index.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            VANTA.TOPOLOGY({
+                el: "#animation-bg",
+                mouseControls: true,
+                touchControls: true,
+                gyroControls: false,
+                minHeight: window.innerHeight,
+                minWidth: window.innerWidth,
+                scale: 1.00,
+                scaleMobile: 1.00,
+                color: 0xffffff,
+                backgroundColor: 0x4646,
+                points: 12,
+                maxDistance: 20,
+                spacing: 15
+            });
+            window.addEventListener('resize', () => {
+                VANTA.TOPOLOGY({
+                    el: "#animation-bg",
+                    minHeight: window.innerHeight,
+                    minWidth: window.innerWidth
+                });
+            });
+        });
+    </script>
+</body>
+</html>
